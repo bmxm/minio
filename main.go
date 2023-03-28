@@ -26,6 +26,13 @@ import (
 	minio "github.com/minio/minio/cmd"
 )
 
+// oss 对象存储，是一种海量、安全、低成本、高可靠的云存储服务，适合存放任意类型的文件。
+// 容量和处理能力弹性拓展，多种存储类型供选择，全面优化存储成本。
+
+// 单机调试： minio server /data
+// 需要跟两个参数：server 和 路径
+//
+// 默认用户名密码：minioadmin
 func main() {
 	minio.Main(os.Args)
 }

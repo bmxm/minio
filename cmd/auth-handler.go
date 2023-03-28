@@ -521,6 +521,8 @@ func reqSignatureV4Verify(r *http.Request, region string, stype serviceType) (s3
 }
 
 // Verify if request has valid AWS Signature Version '4'.
+//
+// 哪些接口需要走？
 func isReqAuthenticated(ctx context.Context, r *http.Request, region string, stype serviceType) (s3Error APIErrorCode) {
 	if errCode := reqSignatureV4Verify(r, region, stype); errCode != ErrNone {
 		return errCode

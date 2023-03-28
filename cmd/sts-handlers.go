@@ -81,6 +81,10 @@ const (
 	roleArnClaim = "roleArn"
 )
 
+// WS Security Token Service (STS)是一项Web服务，允许您请求临时安全凭据，以便您可以在AWS中进行身份验证和授权。
+// 使用STS，您可以为您的应用程序或用户生成临时的、有限的、有条件的安全凭据，这些凭据可以访问您的AWS资源。
+// STS API提供了一组用于请求和管理这些安全凭据的操作。
+
 // stsAPIHandlers implements and provides http handlers for AWS STS API.
 type stsAPIHandlers struct{}
 
@@ -93,6 +97,7 @@ func registerSTSRouter(router *mux.Router) {
 	stsRouter := router.NewRoute().PathPrefix(SlashSeparator).Subrouter()
 
 	// Assume roles with no JWT, handles AssumeRole.
+	// 测试登录接口的时候走到了 AssumeRole
 	stsRouter.Methods(http.MethodPost).MatcherFunc(func(r *http.Request, rm *mux.RouteMatch) bool {
 		ctypeOk := wildcard.MatchSimple("application/x-www-form-urlencoded*", r.Header.Get(xhttp.ContentType))
 		authOk := wildcard.MatchSimple(signV4Algorithm+"*", r.Header.Get(xhttp.Authorization))
@@ -180,6 +185,13 @@ func parseForm(r *http.Request) error {
 // AssumeRole - implementation of AWS STS API AssumeRole to get temporary
 // credentials for regular users on Minio.
 // https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html
+//
+// 根据上述链接中的文档：
+// The temporary security credentials created by AssumeRole can be used to
+// make API calls to any AWS service with the following exception:
+// You cannot call the AWS STS GetFederationToken or GetSessionToken API operations.
+//
+// 登录接口会走到这里
 func (sts *stsAPIHandlers) AssumeRole(w http.ResponseWriter, r *http.Request) {
 	ctx := newContext(r, w, "AssumeRole")
 
